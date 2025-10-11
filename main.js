@@ -1,13 +1,17 @@
 // main.js
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, screen } = require('electron');
 const pty = require('@lydell/node-pty');
 
 let ptyProcesses = {};
 
 function createWindow() {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: Math.floor(width * 0.85),  // 85% of screen width
+    height: Math.floor(height * 0.85), // 85% of screen height
+    minWidth: 800,
+    minHeight: 600,
     webPreferences: {
       preload: `${__dirname}/preload.js`,
       contextIsolation: true,
