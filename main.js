@@ -1,31 +1,37 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
+// main.js
+const { app, BrowserWindow, ipcMain } = require('electron');
+const pty = require('@lydell/node-pty');
+
+let ptyProcesses = {};
 
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'renderer.js'), // optional
-      nodeIntegration: true, // allow Node.js in renderer
-      contextIsolation: false,
-    },
+      preload: `${__dirname}/preload.js`,
+      contextIsolation: true,
+      nodeIntegration: false
+    }
   });
 
   win.loadFile('index.html');
-
-  // Open DevTools (optional)
-  win.webContents.openDevTools();
 }
 
-app.whenReady().then(() => {
-  createWindow();
+app.whenReady().then(createWindow);
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
+ipcMain.handle('pty-spawn', (event, shell, cols, rows) => {
+  const term = pty.spawn(shell, [], { cols, rows, cwd: process.cwd(), env: process.env });
+  const id = Date.now();
+  ptyProcesses[id] = term;
+
+  term.onData(data => event.sender.send('pty-data', { id, data }));
+
+  return id;
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+ipcMain.on('pty-input', (event, id, data) => {
+  if (ptyProcesses[id]) {
+    ptyProcesses[id].write(data);
+  }
 });
