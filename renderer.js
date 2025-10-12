@@ -1,42 +1,36 @@
-// Terminal setup
-const term = new window.Terminal({
-  theme: { background: '#000', foreground: '#fff' },
-  cursorBlink: true
-});
-const fitAddon = new window.FitAddon.FitAddon();
-term.loadAddon(fitAddon);
+import { TerminalManager } from './js/terminalManager.js';
 
-const terminalContainer = document.getElementById('terminal');
-term.open(terminalContainer);
-fitAddon.fit(); // initial fit
-
-// Handle resizing like VS Code
-const resizer = document.getElementById('resizer');
-let isResizing = false;
-
-resizer.addEventListener('mousedown', () => isResizing = true);
-document.addEventListener('mousemove', (e) => {
-  if (!isResizing) return;
-  const newHeight = window.innerHeight - e.clientY;
-  terminalContainer.style.height = newHeight + 'px';
-  fitAddon.fit(); // terminal always fits container
-});
-document.addEventListener('mouseup', () => isResizing = false);
-
-// Spawn PTY
 (async () => {
   const shell = await window.api.getShell();
-  const id = await window.api.spawnPty(shell, term.cols, term.rows); // use current cols/rows
+  const tabsContainer = document.getElementById('terminal-tabs');
+  const terminalContainer = document.getElementById('terminal-container');
 
-  term.onData(data => window.api.sendInput(id, data));
+  const manager = new TerminalManager(tabsContainer, terminalContainer, shell);
 
-  window.api.onData(({ id: incomingId, data }) => {
-    if (incomingId === id) term.write(data);
+  // Create first terminal by default
+  await manager.createTerminal();
+
+  const newTerminalBtn = document.getElementById('new-terminal-btn');
+  newTerminalBtn.addEventListener('click', async () => {
+    await manager.createTerminal();
   });
 
-  // Optional: update PTY size if terminal resizes
-  window.addEventListener('resize', () => {
-    fitAddon.fit();
-    window.api.resizePty(id, term.cols, term.rows);
+  // Example: create new terminal on key combo Ctrl+Shift+T
+  document.addEventListener('keydown', async (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
+      await manager.createTerminal();
+    }
   });
+
+  // Resizer
+  const resizer = document.getElementById('resizer');
+  let isResizing = false;
+  resizer.addEventListener('mousedown', () => isResizing = true);
+  document.addEventListener('mousemove', e => {
+    if (!isResizing) return;
+    const newHeight = window.innerHeight - e.clientY;
+    terminalContainer.style.height = newHeight + 'px';
+    if (manager.activeIndex >= 0) manager.terminals[manager.activeIndex].fitAddon.fit();
+  });
+  document.addEventListener('mouseup', () => isResizing = false);
 })();
