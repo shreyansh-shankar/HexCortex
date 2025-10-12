@@ -4,6 +4,7 @@ import { TerminalManager } from './js/terminalManager.js';
   const shell = await window.api.getShell();
   const tabsContainer = document.getElementById('terminal-tabs');
   const terminalContainer = document.getElementById('terminal-container');
+  const terminalSection = document.getElementById('terminal-section'); // NEW
 
   const manager = new TerminalManager(tabsContainer, terminalContainer, shell);
 
@@ -15,22 +16,29 @@ import { TerminalManager } from './js/terminalManager.js';
     await manager.createTerminal();
   });
 
-  // Example: create new terminal on key combo Ctrl+Shift+T
+  // Ctrl+Shift+T to open new terminal
   document.addEventListener('keydown', async (e) => {
     if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
       await manager.createTerminal();
     }
   });
 
-  // Resizer
+  // === RESIZER LOGIC ===
   const resizer = document.getElementById('resizer');
   let isResizing = false;
+
   resizer.addEventListener('mousedown', () => isResizing = true);
+
   document.addEventListener('mousemove', e => {
     if (!isResizing) return;
-    const newHeight = window.innerHeight - e.clientY;
-    terminalContainer.style.height = newHeight + 'px';
-    if (manager.activeIndex >= 0) manager.terminals[manager.activeIndex].fitAddon.fit();
+    const newHeight = window.innerHeight - e.clientY; // resize terminal section
+    terminalSection.style.height = `${newHeight}px`;
+
+    // Fit xterm.js to new height
+    if (manager.activeIndex >= 0) {
+      manager.terminals[manager.activeIndex].fitAddon.fit();
+    }
   });
+
   document.addEventListener('mouseup', () => isResizing = false);
 })();

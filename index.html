@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <title>HexCortex Terminal</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
   <link rel="stylesheet" href="styles/styles.css">
 </head>
-<body>
-  <div id="editor">Editor / Main content here</div>
 
-  <div id="resizer"></div>
-  <div id="terminal-tabs">
-      <button id="new-terminal-btn">+</button> <!-- Plus button -->
-  </div> <!-- Tab bar -->
-  <div id="terminal-container"></div> <!-- Active terminal shown here -->
+<body>
+  <div id="main-container">
+    <div id="editor">Editor / Main content here</div>
+
+    <div id="resizer"></div>
+
+    <div id="terminal-section">
+      <div id="terminal-tabs">
+        <button id="new-terminal-btn">+</button>
+      </div>
+      <div id="terminal-container"></div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit/lib/xterm-addon-fit.js"></script>
   <script type="module" src="renderer.js"></script>
 </body>
+
 </html>
