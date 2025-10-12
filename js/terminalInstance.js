@@ -1,7 +1,7 @@
 export class TerminalInstance {
   constructor(shell, idCallback) {
     this.term = new Terminal({
-      theme: { background: '#000', foreground: '#fff' },
+      theme: { background: '#111', foreground: '#fff' },
       cursorBlink: true
     });
     this.fitAddon = new FitAddon.FitAddon();

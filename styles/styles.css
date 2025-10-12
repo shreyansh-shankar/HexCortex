@@ -40,7 +40,7 @@ html, body {
 #terminal-section {
   display: flex;
   flex-direction: column;
-  height: 300px; /* initial height */
+  height: 400px; /* initial height */
 }
 
 /* Tabs bar */
@@ -88,15 +88,17 @@ html, body {
   border: none;
   background: #2d2d2d;
   color: #bbb;
-  font-size: 20px;
-  width: 30px;
-  height: 26px;
+  font-size: 18px; /* smaller icon looks better */
+  width: 32px;
+  height: 28px;
   border-radius: 4px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
 }
+
 #new-terminal-btn:hover {
   background: #3a3a3a;
   color: #fff;
@@ -107,4 +109,18 @@ html, body {
 #terminal-container > div {
   width: 100%;
   height: 100%;
+}
+
+/* Close button for tabs */
+.tab-close-btn {
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 16px; /* bigger than before */
+  color: #bbb;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.tab-close-btn:hover {
+  color: #fff;
+  transform: scale(1.2);
 }
